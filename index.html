@@ -35,9 +35,6 @@
     }
     #mainArea { display: none; }
     #loginMessage { color: red; }
-    input[type="password"] {
-      font-family: sans-serif; /* 黒い点（●）を消して通常文字に */
-    }
   </style>
 </head>
 <body>
@@ -46,7 +43,7 @@
   <div id="loginArea">
     <p>合言葉（ひらがな）を入力してください：</p>
     <input type="text" id="passwordInput" placeholder="合言葉を入力">
-    <button onclick="checkPassword()">ログイン</button>
+    <button id="loginButton">ログイン</button>
     <p id="loginMessage"></p>
   </div>
 
@@ -82,6 +79,9 @@
     const mainArea = document.getElementById("mainArea");
     const loginMessage = document.getElementById("loginMessage");
     const passwordInput = document.getElementById("passwordInput");
+    const loginButton = document.getElementById("loginButton");
+
+    loginButton.addEventListener("click", checkPassword);
 
     function checkPassword() {
       const password = passwordInput.value.trim().normalize("NFKC");
