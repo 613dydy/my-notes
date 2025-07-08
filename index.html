@@ -51,7 +51,7 @@
     <h2>📥 新しいリンクを追加</h2>
     <input type="text" id="urlInput" placeholder="https://example.com">
     <textarea id="memoInput" placeholder="メモを入力（任意）" rows="2"></textarea>
-    <button onclick="saveLink()">保存する</button>
+    <button id="saveButton">保存する</button>
 
     <h3>📚 保存済みリンク</h3>
     <div id="linkList"></div>
@@ -60,7 +60,7 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyADnQfkOw1qO5LLPLt-TZg7pAKjXDuasa8",
@@ -80,8 +80,10 @@
     const loginMessage = document.getElementById("loginMessage");
     const passwordInput = document.getElementById("passwordInput");
     const loginButton = document.getElementById("loginButton");
+    const saveButton = document.getElementById("saveButton");
 
     loginButton.addEventListener("click", checkPassword);
+    saveButton.addEventListener("click", saveLink);
 
     function checkPassword() {
       const password = passwordInput.value.trim().normalize("NFKC");
@@ -117,16 +119,23 @@
       const list = document.getElementById("linkList");
       list.innerHTML = "";
 
-      const q = query(collection(db, "links"), orderBy("createdAt", "desc"));
-      const snapshot = await getDocs(q);
+      const snapshot = await getDocs(collection(db, "links"));
+      let items = [];
 
       snapshot.forEach(doc => {
         const data = doc.data();
+        items.push({ url: data.url, memo: data.memo || "", id: doc.id });
+      });
+
+      // 五十音順（URLの文字列順）でソート
+      items.sort((a, b) => a.url.localeCompare(b.url, 'ja'));
+
+      items.forEach(data => {
         const div = document.createElement("div");
         div.className = "entry";
         div.innerHTML = `
           <a href="${data.url}" target="_blank">${data.url}</a><br>
-          <small>${data.memo || "(メモなし)"}</small>
+          <small>${data.memo}</small>
         `;
         list.appendChild(div);
       });
