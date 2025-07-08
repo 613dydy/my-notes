@@ -42,7 +42,7 @@
 
   <div id="loginArea">
     <p>合言葉（ひらがな）を入力してください：</p>
-    <input type="password" id="passwordInput" placeholder="ゆうぴろ">
+    <input type="password" id="passwordInput" placeholder="合言葉を入力">
     <button onclick="checkPassword()">ログイン</button>
     <p id="loginMessage"></p>
   </div>
@@ -59,29 +59,29 @@
 
   <!-- Firebase SDK -->
   <script type="module">
-    // ✅ あなたの Firebase 設定をここに貼ってください（↓はダミー）
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyADnQfkOw1qO5LLPLt-TZg7pAKjXDuasa8",
-  authDomain: "yuupro-links.firebaseapp.com",
-  projectId: "yuupro-links",
-  storageBucket: "yuupro-links.firebasestorage.app",
-  messagingSenderId: "534635843972",
-  appId: "1:534635843972:web:3b24079f063e82498ccdd1",
-  measurementId: "G-0GKLWNP6KP"
-};
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyADnQfkOw1qO5LLPLt-TZg7pAKjXDuasa8",
+      authDomain: "yuupro-links.firebaseapp.com",
+      projectId: "yuupro-links",
+      storageBucket: "yuupro-links.firebasestorage.app",
+      messagingSenderId: "534635843972",
+      appId: "1:534635843972:web:3b24079f063e82498ccdd1",
+      measurementId: "G-0GKLWNP6KP"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ログイン処理
     const loginArea = document.getElementById("loginArea");
     const mainArea = document.getElementById("mainArea");
     const loginMessage = document.getElementById("loginMessage");
     const passwordInput = document.getElementById("passwordInput");
 
     function checkPassword() {
-      const password = passwordInput.value.trim();
+      const password = passwordInput.value.trim().normalize("NFKC");
       if (password === "ゆうぴろ") {
         loginArea.style.display = "none";
         mainArea.style.display = "block";
@@ -91,7 +91,6 @@ const firebaseConfig = {
       }
     }
 
-    // データ保存
     async function saveLink() {
       const url = document.getElementById("urlInput").value.trim();
       const memo = document.getElementById("memoInput").value.trim();
@@ -111,7 +110,6 @@ const firebaseConfig = {
       loadLinks();
     }
 
-    // データ読み込み
     async function loadLinks() {
       const list = document.getElementById("linkList");
       list.innerHTML = "";
